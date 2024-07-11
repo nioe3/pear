@@ -16,7 +16,7 @@ pub mod config;
 use crate::cli::provider::setup::ProviderSetupCommands;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>>{
+async fn main() -> Result<(), anyhow::Error>{
     env_logger::Builder::from_env(env_logger::Env::default())
         // .target(env_logger::Target::Stderr)
         .init();
