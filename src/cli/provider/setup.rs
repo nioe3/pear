@@ -28,7 +28,7 @@ pub enum ProviderSetupCommands {
 }
 
 impl ProviderSetupCommands {
-    pub async fn parse_commands(mut self) -> anyhow::Result<()> {
+    pub async fn execute(mut self) -> anyhow::Result<()> {
         match self {
             ProviderSetupCommands::Ollama { model, host} => {
                 let mut config = config::Config::get()

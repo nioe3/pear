@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>>{
         Provider(command) => {
             match command {
                 ProviderCommands::Setup(commands) => {
-
+                    commands.execute().await?;
                 }
             }
         }
