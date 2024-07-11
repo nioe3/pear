@@ -1,3 +1,3 @@
 pub mod provider_api;
-
-mod context;
+pub mod context;
+pub mod error;

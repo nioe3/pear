@@ -1,3 +1,1 @@
-pub struct IO {
-    pub input: clap::Arg
-}
+// todo add option to specify input/output file

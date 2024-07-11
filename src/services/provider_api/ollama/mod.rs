@@ -1,10 +1,7 @@
 pub mod config;
-
-use std::fmt::{Display, format};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use crate::services::provider_api::ProviderApi;
-
+use super::error::ProviderApiError;
 
 #[derive(Serialize, Deserialize)]
 pub struct RawOllamaRequest {
@@ -36,12 +33,7 @@ impl OllamaRequest {
         }
     }
 
-    pub async fn get_completion(&self, context_prompt: &str) -> Result<String, super::error::Error> {
-
-        // let request = OllamaRequest {
-        //     prompt: context_prompt.to_string(),
-        //     ..Default::default()
-        // };
+    pub async fn get_completion(&self, context_prompt: &str) -> Result<String, ProviderApiError> {
 
         let request = RawOllamaRequest {
             prompt: context_prompt.to_string(),
@@ -52,10 +44,9 @@ impl OllamaRequest {
         let req_json = serde_json::to_string(&request)?;
 
         let client = reqwest::Client::new();
-        // let endpoint = format!("http://10.0.0.211:11434/api/generate");
         let endpoint = self.host_address.join("api/generate")?;
-        println!("Endpoint: {}", endpoint);
-        println!("Request: {}", req_json);
+
+
         let res = client.post(endpoint)
             .body(req_json)
             .send()
@@ -68,7 +59,7 @@ impl OllamaRequest {
         Ok(res)
     }
 
-    pub fn build_from_config() -> Result<OllamaRequest, crate::config::ConfigError> {
+    pub fn build_from_config() -> anyhow::Result<OllamaRequest> {
         let config = crate::config::Config::get()?.provider.ollama;
 
         Ok(OllamaRequest {

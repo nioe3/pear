@@ -1,4 +1,8 @@
+use std::str::FromStr;
 use clap::Subcommand;
+use log::error;
+use url::Url;
+use crate::config;
 
 #[derive(Subcommand, Ord, PartialOrd, Eq, PartialEq, Debug)]
 pub enum ProviderSetupCommands {
@@ -20,5 +24,38 @@ pub enum ProviderSetupCommands {
         /// sets what model to use
         #[arg(short, long, required = true)]
         model: String
+    }
+}
+
+impl ProviderSetupCommands {
+    pub async fn parse_commands(mut self) -> anyhow::Result<()> {
+        match self {
+            ProviderSetupCommands::Ollama { model, host} => {
+                let mut config = config::Config::get()
+                    .map_err(|e| {
+                        error!("Could not read config file: {}", e);
+                        e
+                    })?;
+
+                if let Some(model) = model {
+                    config.provider.ollama.model = model;
+                }
+
+                if let Some(host) = host {
+                    config.provider.ollama.host = Url::from_str(&host).map_err(|e| {
+                        error!("Invalid host Url: {}", e);
+                        e
+                    })?;
+                }
+
+                config.write().await.map_err(|e| {
+                    error!("Could not write config file: {}", e);
+                    e
+                })
+            }
+            ProviderSetupCommands::Anthropic { key, model } => {
+                todo!("Implement anthropic provider");
+            }
+        }
     }
 }

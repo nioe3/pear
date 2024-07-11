@@ -1,4 +1,3 @@
-use clap::{command, Command};
 pub mod provider;
 pub mod app;
 
